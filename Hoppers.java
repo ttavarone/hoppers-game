@@ -15,9 +15,8 @@ public class Hoppers
         private boolean jumped;
         private boolean isMid;
         private Connection head;
-        
 
-        public lilyPad(int padNumIn, boolean hasFrogIn, boolean isRedFrogIn)
+        private lilyPad(int padNumIn, boolean hasFrogIn, boolean isRedFrogIn)
         {
             padNum = padNumIn;
             hasFrog = hasFrogIn;
@@ -25,24 +24,44 @@ public class Hoppers
             isMid = false;
         }
 
-        public int getPadNum()
+        private boolean isMidPoint()
+        {
+            return isMid;
+        }
+
+        private boolean hasFrog()
+        {
+            return hasFrog;
+        }
+
+        private boolean isRedFrog()
+        {
+            return isRedFrog;
+        }
+
+        private int getPadNum()
         {
             return padNum;
         }
 
-        public void placeFrog()
+        private void placeFrog()
         {
             hasFrog = true;
         }
 
-        public void setToRedFrog()
+        private void setToRedFrog()
         {
             isRedFrog = true;
         }
-        
-        public void setToMid()
+
+        private void setToMid()
         {
             isMid = true;
+        }
+        
+        private void removeFrog()
+        {
+            hasFrog = false;
         }
     }
 
@@ -61,7 +80,8 @@ public class Hoppers
     private lilyPad[] board;
     private int remainingFrogs;
     private int firstFrogPos;
-    
+    boolean[][][] testTheMove;
+
     /**
      * For adding connections from lilyPad object to lilyPad object
      * Helps to create the adjaceny list of connections
@@ -154,7 +174,7 @@ public class Hoppers
         addConnect(12, 7);
         addConnect(12, 9);
         addConnect(12, 11);
-        
+
         board[1].setToMid();
         board[3].setToMid();
         board[4].setToMid();
@@ -164,6 +184,27 @@ public class Hoppers
         board[8].setToMid();
         board[9].setToMid();
         board[11].setToMid();
+
+        testTheMove = new boolean[13][13][13];
+
+        testTheMove[0][5][10] = true;testTheMove[0][1][2] = true;testTheMove[0][3][6] = true;
+        testTheMove[1][3][5] = true;testTheMove[1][6][11] = true;testTheMove[1][4][7] = true;
+        testTheMove[2][1][0] = true;testTheMove[2][4][6] = true;testTheMove[2][7][12] = true;
+        testTheMove[3][6][9] = true;testTheMove[4][6][8] = true;testTheMove[5][3][1] = true;
+        testTheMove[5][6][7] = true;testTheMove[5][8][11] = true;testTheMove[6][3][0] = true;
+        testTheMove[6][8][10] = true;testTheMove[6][9][12] = true;testTheMove[6][4][2] = true;
+        testTheMove[7][4][1] = true;testTheMove[7][9][11] = true;testTheMove[8][6][4] = true;
+        testTheMove[9][6][3] = true;testTheMove[10][5][0] = true;testTheMove[10][8][6] = true;
+        testTheMove[10][11][12] = true;testTheMove[11][6][1] = true;testTheMove[11][8][5] = true;
+        testTheMove[11][9][7] = true;testTheMove[12][11][10] = true;testTheMove[12][7][2] = true;
+    }
+
+    private boolean possibleMove(int cur, int mid, int land)
+    {
+        if(testTheMove[cur][mid][land]){return true;}
+        else{
+            return false;
+        }
     }
 
     /**
@@ -188,7 +229,7 @@ public class Hoppers
             }
         }
     }
-    
+
     /**
      * 
      */
@@ -196,21 +237,27 @@ public class Hoppers
     {
         // arraylist that keeps track of jumps
         ArrayList<Integer> jumps = new ArrayList<Integer>();
-        
+
+        int prevCur = 0;
+        int cur = 0;
+        int mid = 0;
+        int land = 0;
+
         //need to choose a starting point
-        Connection c = board[0].head;
-        
+
         // boolean to stop loop of searching if the solution has not been found
         boolean solutionFound = false;
-        //basic loop structure to traverse linkedlist (adj list)
-        
-        for(int i = 0; i < board.length; i++){
-            while(c.next != null){
-                
+        int first = 0;
+        do{
+            for(int second = 0; second < 13; second++){
+                for(int third = 0; third < 13; third++){
+                    
+                }
             }
-        }
+            first++;
+        }while(solutionFound!=true && first < 13);
     }
-    
+
     /**
      * 
      */
