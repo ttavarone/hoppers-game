@@ -53,6 +53,11 @@ public class Hoppers
         {
             isRedFrog = true;
         }
+        
+        private void removeRedFrog()
+        {
+            isRedFrog = false;
+        }
 
         private void setToMid()
         {
@@ -199,14 +204,6 @@ public class Hoppers
         testTheMove[11][9][7] = true;testTheMove[12][11][10] = true;testTheMove[12][7][2] = true;
     }
 
-    private boolean possibleMove(int cur, int mid, int land)
-    {
-        if(testTheMove[cur][mid][land]){return true;}
-        else{
-            return false;
-        }
-    }
-
     /**
      * Takes in the array of frog positions, gets the position number, then sets
      * the board (array of lilyPads) corresponding position to contain a frog
@@ -238,24 +235,68 @@ public class Hoppers
         // arraylist that keeps track of jumps
         ArrayList<Integer> jumps = new ArrayList<Integer>();
 
-        int prevCur = 0;
+        ArrayList<Integer> prevCur = new ArrayList<Integer>();//to keep track of the last jump we made in case we need to backtrack
+        ArrayList<Integer> prevMid = new ArrayList<Integer>();//to keep track of where frogs were
         int cur = 0;
         int mid = 0;
         int land = 0;
 
+        
         //need to choose a starting point
-
+        while(board[cur].hasFrog()){
+            cur++;
+            prevCur.set(0, cur);
+        }
+        
         // boolean to stop loop of searching if the solution has not been found
         boolean solutionFound = false;
-        int first = 0;
         do{
-            for(int second = 0; second < 13; second++){
-                for(int third = 0; third < 13; third++){
-                    
+            for(mid = 0; mid < 13; mid++){
+                for(land = 0; land < 13; land++){
+                    if(testTheMove[cur][mid][land]){
+                        if((board[mid].hasFrog() && (!board[mid].isRedFrog())) && 
+                        (!board[land].hasFrog())){
+                            testTheMove[cur][mid][land] = false;//move has been used
+                            jumps.add(cur);//saving the jumps
+                            jumps.add(land);//saving the jumps
+                            prevCur.add(cur);//saves the prev cur value at end of list
+                            prevMid.add(mid);//saves prev mid value at end of list
+                            remainingFrogs--;//subtracts a frog from our frog count
+                            board[mid].removeFrog();//removed a frog from our frog count
+                            cur = land;//new cur is our landing position
+                        }
+                        else{continue;}//if there are any issues with the mid having a frog or last
+                        //having a frog, we simply start the loop over to test other land values
+                    }
+                    else if(mid==12 && land == 12){//if we hit all of them, backtrack
+                        prevCur.trimToSize();//ensure the arraylist size is accurate
+                        prevMid.trimToSize();//ensure the arraylist size is accurate
+                        jumps.trimToSize();
+                        cur = prevCur.get(prevCur.size()-1);//get the last cur value and set cur to that
+                        mid = prevMid.get(prevCur.size()-1);//same but for mid
+                        land = jumps.get(jumps.size()-1);//same but for land coming from jumps list
+                        jumps.trimToSize();
+                        jumps.remove(jumps.size()-1);
+                        
+                        testTheMove[cur][mid][land] = true;
+                        remainingFrogs++;
+                        board[mid].placeFrog();
+                    }
+                    else if(board[land].isRedFrog()&&remainingFrogs==2){
+                        board[cur].setToRedFrog();
+                        board[land].removeRedFrog();
+                        board[mid].removeFrog();
+                        remainingFrogs--;
+                        mid = 14;
+                        break;
+                    }
+                    else{continue;}//if we have not hit all them, but the move is not valid, restart
+                    //the loop and keep trying
                 }
             }
-            first++;
-        }while(solutionFound!=true && first < 13);
+        }while(remainingFrogs > 1);
+        System.out.println(jumps.toString()+"\n");
+        System.out.println("Done!");
     }
 
     /**
